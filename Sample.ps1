@@ -8,8 +8,8 @@ dir | Sort-Object lastwritetime
 dir | sort-object –descending –property lastwritetime
 
 #To show the object types being passed
-dir | foreach {"$($_.GetType().fullname)  -  $_.name"}  #lazy quick version using alias
-Get-ChildItem | ForEach-Object {"$($_.GetType().fullname)  -  $_.name"}  #Proper script version
+dir | foreach { "$($_.GetType().fullname)  -  $_.name" }  #lazy quick version using alias
+Get-ChildItem | ForEach-Object { "$($_.GetType().fullname)  -  $_.name" }  #Proper script version
 
 #Modules
 Get-Module #to see those loaded
@@ -34,7 +34,7 @@ Update-Help
 Write-Output "Hello World"
 
 #Hello Universe
-Write-Output "Hello Universe"
+Write-Output "Hello Universe .... New Project"
 
 #Use a variable
 $name = "John"
@@ -54,12 +54,12 @@ $proc = Get-Process –name notepad
 $proc.GetType().fullname
 $proc | Get-Member
 
-get-process | Where-Object {$_.handles -gt 900} | Sort-Object -Property handles |
-    ft name, handles -AutoSize
+get-process | Where-Object { $_.handles -gt 900 } | Sort-Object -Property handles |
+ft name, handles -AutoSize
 
 #Must be elevated
 Get-WinEvent -LogName security -MaxEvents 10 | Select-Object -Property Id, TimeCreated, Message |
-    Sort-Object -Property TimeCreated | convertto-html | out-file c:\sec.html
+Sort-Object -Property TimeCreated | convertto-html | out-file c:\sec.html
 
 $xml = [xml](get-content .\R_and_j.xml)
 $xml.PLAY
@@ -82,12 +82,12 @@ Get-Process | Measure-Object WS -Sum
 #PowerShell Core or Windows PowerShell
 Get-WinEvent -LogName security -MaxEvents 5
 Invoke-Command -ComputerName savazuusscdc01, savazuusedc01 `
-    -ScriptBlock {get-winevent -logname security -MaxEvents 5}
+    -ScriptBlock { get-winevent -logname security -MaxEvents 5 }
 
 #Windows PowerShell only
 Get-EventLog -LogName Security -newest 10
-Invoke-command -ComputerName savdaldc01,savdalfs01,localhost `
-    -ScriptBlock {Get-EventLog -LogName Security -newest 10}
+Invoke-command -ComputerName savdaldc01, savdalfs01, localhost `
+    -ScriptBlock { Get-EventLog -LogName Security -newest 10 }
 
 
 #Comparing
@@ -105,31 +105,31 @@ Compare-Object -ReferenceObject $procs -DifferenceObject $procs2 -Property Name
 get-aduser -filter * | Remove-ADUser -whatif
 
 Get-ADUser -Filter * -Properties "LastLogonDate" `
-    | where {$_.LastLogonDate -le (Get-Date).AddDays(-60)} `
-    | sort-object -property lastlogondate -descending `
-    | Format-Table -property name, lastlogondate -AutoSize
+| where { $_.LastLogonDate -le (Get-Date).AddDays(-60) } `
+| sort-object -property lastlogondate -descending `
+| Format-Table -property name, lastlogondate -AutoSize
 
- Get-ADUser -Filter * -Properties "LastLogonDate" `
-    | where {$_.LastLogonDate -le (Get-Date).AddDays(-60)} `
-    | sort-object -property lastlogondate -descending `
-    | Disable-ADAccount -WhatIf
+Get-ADUser -Filter * -Properties "LastLogonDate" `
+| where { $_.LastLogonDate -le (Get-Date).AddDays(-60) } `
+| sort-object -property lastlogondate -descending `
+| Disable-ADAccount -WhatIf
 
 $ConfirmPreference = "medium"
 notepad
-Get-Process | where {$_.name –eq "notepad"} | Stop-Process
+Get-Process | where { $_.name –eq "notepad" } | Stop-Process
 notepad
-get-process | where {$_.name -eq "notepad"} | stop-process -confirm:$false
+get-process | where { $_.name -eq "notepad" } | stop-process -confirm:$false
 $ConfirmPreference = "high"
-Get-Process | where {$_.name –eq "notepad"} | Stop-Process
+Get-Process | where { $_.name –eq "notepad" } | Stop-Process
 
 
 #Using $_
 
-Get-Process | Where-Object {$_.name –eq "notepad"} | Stop-Process
+Get-Process | Where-Object { $_.name –eq "notepad" } | Stop-Process
 
 #Simply notation
-Get-Process | where {$_.HandleCount -gt 900}
-Get-Process | where {$psitem.HandleCount -gt 900}
+Get-Process | where { $_.HandleCount -gt 900 }
+Get-Process | where { $psitem.HandleCount -gt 900 }
 Get-Process | where HandleCount -gt 900
 Get-Process | ? HandleCount -gt 900
 
@@ -138,12 +138,12 @@ $UnattendFile = "unattend.xml"
 $xml = [xml](gc $UnattendFile)
 $child = $xml.CreateElement("TimeZone", $xml.unattend.NamespaceURI)
 $child.InnerXml = "Central Standard Time"
-$null = $xml.unattend.settings.Where{($_.Pass -eq 'oobeSystem')}.component.appendchild($child)
+$null = $xml.unattend.settings.Where{ ($_.Pass -eq 'oobeSystem') }.component.appendchild($child)
 #$xml.Save($UnattendFile)
 $xml.InnerXml
 
 $resources = Get-AzResourceProvider -ProviderNamespace Microsoft.Compute
-$resources.ResourceTypes.Where{($_.ResourceTypeName -eq 'virtualMachines')}.Locations
+$resources.ResourceTypes.Where{ ($_.ResourceTypeName -eq 'virtualMachines') }.Locations
 
 
 #endregion
@@ -154,36 +154,36 @@ $resources.ResourceTypes.Where{($_.ResourceTypeName -eq 'virtualMachines')}.Loca
 #enabling WinRM and PS Remoting
 Enable-PSRemoting
 
-Invoke-Command -ComputerName savazuusscdc01 {$env:computername}
-Invoke-Command -ComputerName savazuusscds01 {$var=10}
-Invoke-Command -ComputerName savazuusscds01 {$var}
+Invoke-Command -ComputerName savazuusscdc01 { $env:computername }
+Invoke-Command -ComputerName savazuusscds01 { $var = 10 }
+Invoke-Command -ComputerName savazuusscds01 { $var }
 
 #Filter on remote and perform actions or strange results
-Invoke-Command -ComputerName savazuusscdc01 -ScriptBlock {get-eventlog -logname security} | select-object -First 10
-Invoke-command -computername savazuusscdc01 -scriptblock {get-eventlog -logname security | select-object -first 10}
-Invoke-command -computername savazuusscdc01 -scriptblock {get-eventlog -logname security -newest 10}
+Invoke-Command -ComputerName savazuusscdc01 -ScriptBlock { get-eventlog -logname security } | select-object -First 10
+Invoke-command -computername savazuusscdc01 -scriptblock { get-eventlog -logname security | select-object -first 10 }
+Invoke-command -computername savazuusscdc01 -scriptblock { get-eventlog -logname security -newest 10 }
 
-Invoke-Command -ComputerName savazuusscdc01 -ScriptBlock {get-process} | where {$_.name -eq "notepad"} | Stop-Process
-Invoke-Command -ComputerName savazuusscdc01 -ScriptBlock {get-process | where {$_.name -eq "notepad"} | Stop-Process }
+Invoke-Command -ComputerName savazuusscdc01 -ScriptBlock { get-process } | where { $_.name -eq "notepad" } | Stop-Process
+Invoke-Command -ComputerName savazuusscdc01 -ScriptBlock { get-process | where { $_.name -eq "notepad" } | Stop-Process }
 
-Measure-Command {Invoke-Command -ComputerName savazuusscdc01 -ScriptBlock {get-process} | where {$_.name -eq "notepad"} }
-Measure-Command {Invoke-Command -ComputerName savazuusscdc01 -ScriptBlock {get-process | where {$_.name -eq "notepad"}} }
+Measure-Command { Invoke-Command -ComputerName savazuusscdc01 -ScriptBlock { get-process } | where { $_.name -eq "notepad" } }
+Measure-Command { Invoke-Command -ComputerName savazuusscdc01 -ScriptBlock { get-process | where { $_.name -eq "notepad" } } }
 
 
 #Sessions
 $session = New-PSSession -ComputerName savazuusscds01
-Invoke-Command -SessionName $session {$var=10}
-Invoke-Command -SessionName $session {$var}
+Invoke-Command -SessionName $session { $var = 10 }
+Invoke-Command -SessionName $session { $var }
 Enter-PSSession -Session $session  #also interactive
 Get-PSSession
 $session | Remove-PSSession
 
 #Multiple machines
 $dcs = "savazuusedc01", "savazuusscdc01"
-Invoke-Command -ComputerName $dcs -ScriptBlock {$env:computername}
+Invoke-Command -ComputerName $dcs -ScriptBlock { $env:computername }
 $sess = New-PSSession -ComputerName $dcs
 $sess
-icm –session $sess –scriptblock {$env:computername}
+icm –session $sess –scriptblock { $env:computername }
 
 #Implicit remoting
 $adsess = New-PSSession -ComputerName savazuusscdc01
@@ -220,10 +220,10 @@ Get-PSSession #Note the WinCompat session to local machine
 #Alternate endpoint
 Enable-WSManCredSSP -Role "Server" -Force
 New-PSSessionConfigurationFile –ModulesToImport OneTech, ActiveDirectory, Microsoft.PowerShell.Utility `
-	–VisibleCmdLets ('*OneTech*','*AD*','format*','get-help') `
-	-VisibleFunctions ('TabExpansion2') -VisibleAliases ('exit','ft','fl') –LanguageMode ConstrainedLanguage `
-	-VisibleProviders FileSystem `
-	–SessionType ‘RestrictedRemoteServer’ –Path ‘c:\dcmonly.pssc’
+    –VisibleCmdLets ('*OneTech*', '*AD*', 'format*', 'get-help') `
+    -VisibleFunctions ('TabExpansion2') -VisibleAliases ('exit', 'ft', 'fl') –LanguageMode ConstrainedLanguage `
+    -VisibleProviders FileSystem `
+    –SessionType ‘RestrictedRemoteServer’ –Path ‘c:\dcmonly.pssc’
 Register-PSSessionConfiguration -Name "DCMs" -Path C:\dcmonly.pssc -StartupScript C:\PSData\DCMProd.ps1
 
 $pssc = Get-PSSessionConfiguration -Name "DCMs"
@@ -235,38 +235,38 @@ $accessType = "Allow"
 $accessMask = 268435456
 $inheritanceFlags = "None"
 $propagationFlags = "None"
-$psscSd.DiscretionaryAcl.AddAccess($accessType,$account.Translate([System.Security.Principal.SecurityIdentifier]),$accessMask,$inheritanceFlags,$propagationFlags)
+$psscSd.DiscretionaryAcl.AddAccess($accessType, $account.Translate([System.Security.Principal.SecurityIdentifier]), $accessMask, $inheritanceFlags, $propagationFlags)
 Set-PSSessionConfiguration -Name "DCMs" -SecurityDescriptorSddl $psscSd.GetSddlForm("All") -Force
 #Set-PSSessionConfiguration -Name "DCMs" -ShowSecurityDescriptorUI
 Restart-Service WinRM
 
 
 #Enabling HTTPS
-Winrm create winrm/config/Listener?Address=*+Transport=HTTPS @{Hostname="host";CertificateThumbprint="thumbprint"}
+Winrm create winrm/config/Listener?Address=*+Transport=HTTPS @{Hostname = "host"; CertificateThumbprint = "thumbprint" }
 #e.g.
 cd Cert:\LocalMachine\My
 Get-ChildItem #or ls remember. Find the thumbprint you want
-winrm create winrm/config/listener?address=*+Transport=HTTPS @{Hostname="savazuusscdc01.savilltech.net";CertificateThumbprint="B4B3FAE3F30944617E477F77756D6ABCB9980E38"}
+winrm create winrm/config/listener?address=*+Transport=HTTPS @{Hostname = "savazuusscdc01.savilltech.net"; CertificateThumbprint = "B4B3FAE3F30944617E477F77756D6ABCB9980E38" }
 New-NetFirewallRule -DisplayName "Windows Remote Management (HTTPS-In)" -Name "Windows Remote Management (HTTPS-In)" -Profile Any -LocalPort 5986 -Protocol TCP
 
 #To view - must be elevated
 winrm enumerate winrm/config/Listener
 
 #Connect using SSL
-Invoke-Command savazuusscdc01.savilltech.net -ScriptBlock {$env:computername} -UseSSL
+Invoke-Command savazuusscdc01.savilltech.net -ScriptBlock { $env:computername } -UseSSL
 #Short name will fail as using cert can override
 $option = New-PSSessionOption -SkipCACheck -SkipCNCheck -SkipRevocationCheck
 Enter-PSSession -ComputerName savazuusscdc01 -SessionOption $option -useSSL
 
 #Connection via SSH  hostname instead of computername
-Invoke-Command -HostName savazuussclnx01 -ScriptBlock {get-process} -UserName john
+Invoke-Command -HostName savazuussclnx01 -ScriptBlock { get-process } -UserName john
 
 #Mix of WinRM and SSH
 New-PSSession -ComputerName savazuusscds01  #winrm
 New-PSSession -HostName savazuussclnx01 -UserName john
 Get-PSSession -OutVariable sess
 $sess
-invoke-command $sess {get-process *s}
+invoke-command $sess { get-process *s }
 $sess | Remove-PSSession
 
 #endregion
@@ -275,9 +275,9 @@ $sess | Remove-PSSession
 #region Module 4 - PowerShell Scripting
 
 #Shows write-host vs write-output
-function Receive-Output
-{
-    process { write-host $_ -ForegroundColor Green}
+function Receive-Output {
+    process { write-host $_ -ForegroundColor Green
+    }
 }
 Write-Output "this is a test" | Receive-Output
 Write-Host "this is a test" | Receive-Output
@@ -303,7 +303,8 @@ Get-CimInstance -ClassName Win32_Logical  #ctrl space to intelli sense all the n
 
 #region Module 5 - Advanced PowerShell Scripting
 
-function first3 {$input | Select-Object -First 3}
+function first3 { $input | Select-Object -First 3
+}
 get-process | first3
 
 #Code signing
@@ -350,19 +351,19 @@ $password = (get-azkeyvaultsecret -vaultName 'SavillVault' -Name 'SamplePassword
 #Recreate
 $newcred = New-Object System.Management.Automation.PSCredential ($username, $password)
 #Test
-invoke-command -ComputerName savazuusscdc01 -Credential $newcred -ScriptBlock {whoami}
+invoke-command -ComputerName savazuusscdc01 -Credential $newcred -ScriptBlock { whoami }
 
 #Var types
-$number=42
-$boolset=$true
-$stringval="hello"
-$charval='a'
+$number = 42
+$boolset = $true
+$stringval = "hello"
+$charval = 'a'
 $number.GetType()
 $boolset.GetType()
 $stringval.GetType()
 $charval.GetType()
 
-[char]$newchar= 'a'
+[char]$newchar = 'a'
 $newchar.GetType()
 
 42 –is [int]
@@ -376,18 +377,17 @@ $string2 = $string1 + " who was not amused"
 
 
 #Time
-$today=Get-Date
+$today = Get-Date
 $today | Select-Object –ExpandProperty DayOfWeek
-[DateTime]::ParseExact("02-25-2011","MM-dd-yyyy",[System.Globalization.CultureInfo]::InvariantCulture)
-$christmas=[system.datetime]"25 December 2019"
+[DateTime]::ParseExact("02-25-2011", "MM-dd-yyyy", [System.Globalization.CultureInfo]::InvariantCulture)
+$christmas = [system.datetime]"25 December 2019"
 ($christmas - $today).Days
 $today.AddDays(-60)
 $a = new-object system.globalization.datetimeformatinfo
 $a.DayNames
 
 #Variable Scope
-function test-scope()
-{
+function test-scope() {
     write-output $defvar
     write-output $global:globvar
     write-output $script:scripvar
@@ -408,22 +408,22 @@ $funcglobal #this should be visible
 
 #Variables with Invoke-Command
 $message = "Message to John"
-Invoke-Command -ComputerName savazuusscdc01 -ScriptBlock {Write-Host $message}
+Invoke-Command -ComputerName savazuusscdc01 -ScriptBlock { Write-Host $message }
 
 $ScriptBlockContent = {
     param ($MessageToWrite)
     Write-Host $MessageToWrite }
 Invoke-Command -ComputerName savazuusscdc01 -ScriptBlock $ScriptBlockContent -ArgumentList $message
 #or
-Invoke-Command -ComputerName savazuusscdc01 -ScriptBlock {Write-Output $args} -ArgumentList $message
+Invoke-Command -ComputerName savazuusscdc01 -ScriptBlock { Write-Output $args } -ArgumentList $message
 
-Invoke-Command -ComputerName savazuusscdc01 -ScriptBlock {Write-Host $using:message}
+Invoke-Command -ComputerName savazuusscdc01 -ScriptBlock { Write-Host $using:message }
 
 
 #Hash Tables
-$favthings = @{"Julie"="Sushi";"Ben"="Trains";"Abby"="Princess";"Kevin"="Minecraft"}
-$favthings.Add("John","Crab Cakes")
-$favthings.Set_Item("John","Steak")
+$favthings = @{"Julie" = "Sushi"; "Ben" = "Trains"; "Abby" = "Princess"; "Kevin" = "Minecraft" }
+$favthings.Add("John", "Crab Cakes")
+$favthings.Set_Item("John", "Steak")
 $favthings.Get_Item("Abby")
 
 #Custom objects
@@ -431,18 +431,18 @@ $cusobj = New-Object PSObject
 Add-Member -InputObject $cusobj -MemberType NoteProperty `
     -Name greeting -Value "Hello"
 
-$favthings = @{"Julie"="Sushi";"Ben"="Trains";"Abby"="Princess";"Kevin"="Minecraft"}
+$favthings = @{"Julie" = "Sushi"; "Ben" = "Trains"; "Abby" = "Princess"; "Kevin" = "Minecraft" }
 $favobj = New-Object PSObject -Property $favthings
 #In PowerShell v3 can skip a step
-$favobj2 = [PSCustomObject]@{"Julie"="Sushi";"Ben"="Trains";"Abby"="Princess";"Kevin"="Minecraft"}
+$favobj2 = [PSCustomObject]@{"Julie" = "Sushi"; "Ben" = "Trains"; "Abby" = "Princess"; "Kevin" = "Minecraft" }
 
 
 #Foreach
-$names = @("Julie","Abby","Ben","Kevin")
-$names | ForEach-Object -Process { Write-Output $_}
-$names | ForEach -Process { Write-Output $_}
-$names | ForEach { Write-Output $_}
-$names | % { Write-Output $_}
+$names = @("Julie", "Abby", "Ben", "Kevin")
+$names | ForEach-Object -Process { Write-Output $_ }
+$names | ForEach -Process { Write-Output $_ }
+$names | ForEach { Write-Output $_ }
+$names | % { Write-Output $_ }
 
 #Foreach vs Foreach
 ForEach-Object -InputObject (1..100) {
@@ -472,8 +472,7 @@ Get-ADUser $samacctname  -Properties mail | select-object -ExpandProperty mail
 #Imperative install
 Import-Module ServerManager
 #Check and install Web Server Role if not installed
-If (-not (Get-WindowsFeature "Web-Server").Installed)
-{
+If (-not (Get-WindowsFeature "Web-Server").Installed) {
     try {
         Add-WindowsFeature Web-Server
     }
@@ -491,21 +490,21 @@ Get-DscResource
 #region Module 8 - Automation Technologies
 
 #Short workflow
-Workflow MyWorkflow {Write-Output "Hello from Workflow!"}
+Workflow MyWorkflow { Write-Output "Hello from Workflow!"
+}
 MyWorkflow
 
 #Long workflow
-Workflow LongWorkflow
-{
-Write-Output -InputObject "Loading some information..."
-  Start-Sleep -Seconds 10
-  CheckPoint-Workflow
-  Write-Output -InputObject "Performing process list..."
-  Get-process -PSPersist $true #this adds checkpoint
-  Start-Sleep -Seconds 10
-  CheckPoint-Workflow
-  Write-Output -InputObject "Cleaning up..."
-  Start-Sleep -Seconds 10
+Workflow LongWorkflow {
+    Write-Output -InputObject "Loading some information..."
+    Start-Sleep -Seconds 10
+    CheckPoint-Workflow
+    Write-Output -InputObject "Performing process list..."
+    Get-process -PSPersist $true #this adds checkpoint
+    Start-Sleep -Seconds 10
+    CheckPoint-Workflow
+    Write-Output -InputObject "Cleaning up..."
+    Start-Sleep -Seconds 10
 
 }
 LongWorkflow –AsJob –JobName LongWF –PSPersist $true
@@ -518,10 +517,8 @@ Receive-Job LongWF –Keep
 Remove-Job LongWF #removes the saved state of the job
 
 #Parallel execution
-workflow paralleltest
-{
-    parallel
-    {
+workflow paralleltest {
+    parallel {
         get-process -Name w*
         get-process -Name s*
         get-service -name x*
@@ -530,24 +527,19 @@ workflow paralleltest
 }
 paralleltest
 
-workflow compparam
-{
-   param([string[]]$computers)
-   foreach –parallel ($computer in $computers)
-   {
+workflow compparam {
+    param([string[]]$computers)
+    foreach –parallel ($computer in $computers) {
         Get-CimInstance –Class Win32_OperatingSystem –PSComputerName $computer
         Get-CimInstance –Class win32_ComputerSystem –PSComputerName $computer
-   }
+    }
 }
 compparam -computers savazuusscdc01, savazuusedc01
 
 #Parallel and Sequence
-workflow parallelseqtest
-{
-    parallel
-    {
-        sequence
-        {
+workflow parallelseqtest {
+    parallel {
+        sequence {
             get-process -Name w*
             get-process -Name s*
         }
@@ -557,11 +549,10 @@ workflow parallelseqtest
 }
 parallelseqtest
 
-Workflow RestrictionCheck
-{
+Workflow RestrictionCheck {
     $msgtest = "Hello"
     #msgtest.ToUpper()
-    $msgtest = InlineScript {($using:msgtest).ToUpper()}
+    $msgtest = InlineScript { ($using:msgtest).ToUpper() }
     Write-Output $msgtest
 }
 RestrictionCheck
@@ -572,6 +563,6 @@ Invoke-RestMethod -Method Get -Uri $FunctionURL
 
 Invoke-RestMethod -Method Get -Uri "$($FunctionURL)&name=John"
 
-$JSONBody = @{name = "World"} | ConvertTo-Json
+$JSONBody = @{name = "World" } | ConvertTo-Json
 Invoke-RestMethod -Method Post -Body $JSONBody -Uri $FunctionURL
 #endregion
